@@ -1,19 +1,21 @@
-from fastapi import FastAPI
-from pydantic import BaseModel
+from fastapi import FastAPI, UploadFile, File, Form
 from typing import Optional
 
 app = FastAPI()
 
-class StudentQuery(BaseModel):
-    question: str
-    image: Optional[str] = None
-
 @app.post("/api/")
-async def virtual_ta(query: StudentQuery):
+async def answer_question(
+    question: str = Form(...),
+    image: Optional[UploadFile] = File(None)
+):
+    image_info = None
+    if image:
+        image_info = {
+            "filename": image.filename,
+            "content_type": image.content_type
+        }
+
     return {
-        "answer": "This is a test response.",
-        "links": [
-            {"url": "https://example.com/1", "text": "Example Link 1"},
-            {"url": "https://example.com/2", "text": "Example Link 2"}
-        ]
+        "answer": f"You asked: {question}",
+        "image_info": image_info
     }
