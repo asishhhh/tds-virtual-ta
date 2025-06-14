@@ -1,6 +1,6 @@
-from fastapi import FastAPI, UploadFile, File, Form # type: ignore
+from fastapi import FastAPI, UploadFile, File, Form
 from typing import Optional
-from fastapi.middleware.cors import CORSMiddleware # type: ignore
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
@@ -12,9 +12,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.api_route("/api", methods=["POST", "GET", "OPTIONS"])
+@app.post("/api")
 async def answer_question(
-    question: Optional[str] = Form(None),
+    question: str = Form(...),
     image: Optional[UploadFile] = File(None)
 ):
     image_info = None
@@ -24,14 +24,13 @@ async def answer_question(
             "content_type": image.content_type
         }
 
-    if question:
-        return {
-            "answer": f"You asked: {question}",
-            "image_info": image_info
-        }
-    else:
-        # Respond with answer field even if no question
-        return {
-            "answer": "This endpoint supports POST requests with 'question' and optionally 'image'.",
-            "image_info": None
-        }
+    return {
+        "answer": f"You asked: {question}",
+        "image_info": image_info,
+        "links": [
+            {
+                "url": "https://discourse.onlinedegree.iitm.ac.in/",
+                "text": "This is an example link."
+            }
+        ]
+    }
