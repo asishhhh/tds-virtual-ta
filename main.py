@@ -12,7 +12,7 @@ app.add_middleware(
   allow_headers=["*"],
 )
 
-@app.post("/api/")
+@app.post("/api")
 async def answer_question(
     question: str = Form(...),
     image: Optional[UploadFile] = File(None)
