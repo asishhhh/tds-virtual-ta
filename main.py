@@ -1,8 +1,17 @@
 from fastapi import FastAPI, UploadFile, File, Form
+from typing import Optional, List
+from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
-from typing import Optional
-import openai
-import os
+
+# Response schema
+class Link(BaseModel):
+    url: str
+    text: str
+
+class AnswerResponse(BaseModel):
+    answer: str
+    image_info: Optional[dict]
+    links: List[Link]
 
 app = FastAPI()
 
@@ -14,10 +23,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Set your OpenAI API key (in Render, use Environment Variable)
-openai.api_key = os.getenv("OPENAI_API_KEY")
-
-@app.post("/api")
+@app.post("/api", response_model=AnswerResponse, status_code=200)
 async def answer_question(
     question: str = Form(...),
     image: Optional[UploadFile] = File(None)
@@ -29,26 +35,13 @@ async def answer_question(
             "content_type": image.content_type
         }
 
-    # Use OpenAI to generate answer
-    try:
-        completion = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {"role": "system", "content": "You are a helpful TA for the Tools in Data Science course."},
-                {"role": "user", "content": question}
-            ]
-        )
-        answer_text = completion.choices[0].message["content"]
-    except Exception as e:
-        answer_text = f"Error generating response: {str(e)}"
-
     return {
-        "answer": answer_text,
+        "answer": f"You asked: {question}",
         "image_info": image_info,
         "links": [
             {
                 "url": "https://discourse.onlinedegree.iitm.ac.in/",
-                "text": "Example reference link"
+                "text": "Example response link"
             }
         ]
     }
