@@ -1,0 +1,18 @@
+providers:
+  - type: http
+    id: my-api
+    url: https://tds-virtual-ta-2-plv9.onrender.com/api
+    config:
+      method: POST
+      headers:
+        Content-Type: application/json
+      body:
+        question: "{{ input }}"
+
+scenarios:
+  - name: GA5 model choice
+    tests:
+      - input: "Should I use GPT-4o-mini which AI proxy supports, or gpt3.5 turbo?"
+        assert:
+          contains:
+            - "gpt-3.5"
