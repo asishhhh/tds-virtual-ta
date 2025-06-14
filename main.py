@@ -30,7 +30,7 @@ async def answer_question(
         "links": [
             {
                 "url": "https://discourse.onlinedegree.iitm.ac.in/",
-                "text": "This is an example link."
+                "text": "Example response link"
             }
         ]
     }
